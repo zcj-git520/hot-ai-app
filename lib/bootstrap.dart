@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,11 +10,15 @@ import 'package:hot_ai_app/core/network/interceptors/retry_interceptor.dart';
 import 'package:hot_ai_app/core/storage/hive_init.dart';
 import 'package:hot_ai_app/core/storage/secure_storage.dart';
 import 'package:hot_ai_app/features/articles/data/article_repository_impl.dart';
-import 'package:hot_ai_app/features/articles/domain/article_repository.dart';
 import 'package:hot_ai_app/features/articles/presentation/articles_controller.dart';
+import 'package:hot_ai_app/features/professions/data/profession_repository_impl.dart';
+import 'package:hot_ai_app/features/professions/presentation/professions_controller.dart';
+import 'package:hot_ai_app/features/learning_paths/data/learning_path_repository_impl.dart';
+import 'package:hot_ai_app/features/learning_paths/presentation/learning_paths_controller.dart';
+import 'package:hot_ai_app/features/tools/data/tool_repository_impl.dart';
+import 'package:hot_ai_app/features/tools/presentation/tools_controller.dart';
 import 'package:hot_ai_app/features/profile/data/auth_storage.dart';
 import 'package:hot_ai_app/features/profile/data/user_repository_impl.dart';
-import 'package:hot_ai_app/features/profile/domain/user_repository.dart';
 import 'package:hot_ai_app/features/profile/presentation/auth_controller.dart';
 
 Future<void> bootstrap() async {
@@ -29,7 +32,7 @@ Future<void> bootstrap() async {
   final dio = buildDio();
   // 2. 装上需要 dio 自身引用的拦截器(RetryInterceptor)
   dio.interceptors.addAll([
-    LogInterceptor(),
+    AppLogInterceptor(),
     AuthInterceptor(storage: tokenStorage),
     RetryInterceptor(dio: dio),
     ErrorInterceptor(),
@@ -37,11 +40,17 @@ Future<void> bootstrap() async {
 
   final userRepo = UserRepositoryImpl(dio: dio, storage: authStorage);
   final articleRepo = ArticleRepositoryImpl(dio: dio, boxes: boxes);
+  final professionRepo = ProfessionRepositoryImpl(dio: dio, boxes: boxes);
+  final learningPathRepo = LearningPathRepositoryImpl(dio: dio, boxes: boxes);
+  final toolRepo = ToolRepositoryImpl(dio: dio, boxes: boxes);
 
   runApp(ProviderScope(
     overrides: [
       appBoxesProvider.overrideWithValue(boxes),
       articleRepositoryProvider.overrideWithValue(articleRepo),
+      professionRepositoryProvider.overrideWithValue(professionRepo),
+      learningPathRepositoryProvider.overrideWithValue(learningPathRepo),
+      toolRepositoryProvider.overrideWithValue(toolRepo),
       userRepositoryProvider.overrideWithValue(userRepo),
     ],
     child: const HotAiApp(),
