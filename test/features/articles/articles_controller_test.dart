@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hot_ai_app/features/articles/data/article_repository_impl.dart';
 import 'package:hot_ai_app/features/articles/domain/article.dart';
 import 'package:hot_ai_app/features/articles/domain/article_repository.dart';
 import 'package:hot_ai_app/features/articles/presentation/articles_controller.dart';

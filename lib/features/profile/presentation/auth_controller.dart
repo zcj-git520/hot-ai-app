@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hot_ai_app/features/profile/data/user_repository_impl.dart';
 import 'package:hot_ai_app/features/profile/domain/user.dart';
 import 'package:hot_ai_app/features/profile/domain/user_repository.dart';
 

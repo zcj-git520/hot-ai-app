@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hot_ai_app/core/storage/hive_init.dart';
 import 'package:hot_ai_app/features/articles/data/article_repository_impl.dart';
-import 'package:hot_ai_app/core/network/interceptors/error_interceptor.dart';
 import 'dart:io';
 
 void main() {
