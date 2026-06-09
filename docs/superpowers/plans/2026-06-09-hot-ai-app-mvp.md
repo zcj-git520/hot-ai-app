@@ -6,7 +6,12 @@
 
 **Architecture:** Feature-first Flutter app,Riverpod 状态管理 + dio HTTP + Hive 离线缓存 + go_router 路由 + flutter_secure_storage 存 JWT。App 走 nginx 代理调用现有 Go Zero 网关,只新增 2 个 push-token 端点(M4 阶段使用)。
 
-**Tech Stack:** Flutter 3.22 / Dart 3.4, flutter_riverpod 2.5, dio 5.4, hive 2.2 + hive_flutter, flutter_secure_storage 9, go_router 14, flutter_widget_from_html, cached_network_image, connectivity_plus, mocktail, integration_test
+**Tech Stack:** Flutter 3.44 / Dart 3.12, flutter_riverpod 2.x (注: 3.x 语法不兼容本 plan 代码), dio 5.x, hive 2.2 + hive_flutter, flutter_secure_storage 9.x+, go_router 14.x+, flutter_widget_from_html, cached_network_image, connectivity_plus, mocktail, integration_test
+
+**版本适配说明 (2026-06-09):** 原 plan 写于 Flutter 3.22 / Dart 3.4 假设下,实际开发机为 Flutter 3.44.1 / Dart 3.12.1。已做以下调整:
+- Task 1: 跳过 `flutter create`(仓库已存在),只做 `pub get` baseline 验证
+- Task 2: 依赖版本用 `^X.Y.0` 范围让 pub 自动解析与 Dart 3.12 兼容的版本
+- 实施过程中如遇 API 变更,在该 Task 报告里写明微调,继续推进
 
 **本计划范围(MVP):**
 - M0: 基建(工程骨架 + dio 拦截器 + 错误模型 + Hive + 路由 + 主题 + i18n)
@@ -109,37 +114,44 @@ hot-ai-app/                                 # 新建仓库,根目录
 
 # Phase M0: Foundation
 
-## Task 1: Initialize Flutter project
+## Task 1: 验证 Flutter 工程基线
 
 **Files:**
-- Create: `hot-ai-app/`(整个 Flutter 项目)
-- Create: `hot-ai-app/pubspec.yaml`
-- Create: `hot-ai-app/.gitignore`
+- Read: `hot-ai-app/pubspec.yaml`(确认存在)
+- Read: `hot-ai-app/.gitignore`(确认 Flutter 标准)
 
-- [ ] **Step 1: 在 D:/hot-ai/ 下创建 Flutter 项目**
+> 注: `hot-ai-app/` 仓库已存在(初始 commit + Flutter 标准 .gitignore),无需 `flutter create`。
 
-```bash
-cd D:/hot-ai
-flutter create --org com.hotai --project-name hot_ai_app --platforms=android,ios hot-ai-app
-```
-
-Expected: 目录 `hot-ai-app/` 存在,含 `pubspec.yaml`、`lib/main.dart`、`android/`、`ios/`。
-
-- [ ] **Step 2: 验证 baseline 能跑**
+- [ ] **Step 1: 验证工程结构与 baseline**
 
 ```bash
 cd D:/hot-ai/hot-ai-app
+ls pubspec.yaml android ios 2>&1 | head -20
+flutter --version
 flutter pub get
+```
+
+Expected: `pubspec.yaml` 存在,`flutter --version` 输出 3.44.x + Dart 3.12.x,`flutter pub get` 无错(可能因为依赖空产生警告,可接受)。
+
+- [ ] **Step 2: 验证空工程能 analyze**
+
+```bash
 flutter analyze
 ```
 
-Expected:`No issues found!`
+Expected: 无 error(警告 OK)
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: 提交 scaffold 状态(如未提交)**
 
 ```bash
-git init 2>/dev/null; git add .; git commit -m "chore: scaffold flutter project"
+cd D:/hot-ai/hot-ai-app
+git status
+# 若有未提交改动:
+git add -A
+git commit -m "chore: scaffold flutter project baseline (Flutter 3.44 / Dart 3.12)"
 ```
+
+若 `git status` 干净,跳过此步。
 
 ---
 
@@ -171,22 +183,24 @@ Expected:`+1: All tests passed!`
 
 - [ ] **Step 3: 在 pubspec.yaml 替换 dependencies 块**
 
+> 适配 Flutter 3.44 / Dart 3.12,版本用 `^X.Y.0` 范围让 pub 自动解析兼容版本。若 `flutter pub get` 报某个包与 Dart 3.12 不兼容,在本 Task 报告里写明并调整版本。
+
 ```yaml
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_riverpod: ^2.5.1
-  dio: ^5.4.3+1
+  flutter_riverpod: ^2.6.0
+  dio: ^5.7.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   flutter_secure_storage: ^9.2.2
-  go_router: ^14.2.0
-  flutter_widget_from_html: ^0.15.0
-  cached_network_image: ^3.3.1
-  connectivity_plus: ^6.0.3
-  intl: ^0.19.0
+  go_router: ^14.6.0
+  flutter_widget_from_html: ^0.16.0
+  cached_network_image: ^3.4.0
+  connectivity_plus: ^6.1.0
+  intl: ^0.20.0
   google_fonts: ^6.2.1
 
 dev_dependencies:
@@ -194,8 +208,8 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-  mocktail: ^1.0.3
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
 ```
 
 - [ ] **Step 4: pub get + analyze**
