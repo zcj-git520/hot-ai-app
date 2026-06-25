@@ -31,12 +31,12 @@ void main() {
   test('getArticles 同时写入 articles_meta box', () async {
     await repo.getArticles(page: 1, category: null);
     final ids = boxes.articlesMeta.keys;
-    expect(ids, contains('a1'));
+    expect(ids, contains('1'));
   });
 
   test('getArticle 命中缓存时立刻返回', () async {
     await boxes.articleDetails.put('a1', {
-      'id': 'a1', 'title': 'cached', 'summary': '', 'contentHtml': '',
+      'id': '1', 'title': 'cached', 'summary': '', 'contentHtml': '',
       'coverUrl': null, 'publishedAt': DateTime.now().toIso8601String(),
       'category': '', 'isFavorited': false,
     });
@@ -50,14 +50,14 @@ class _StubAdapter implements HttpClientAdapter {
   Future<ResponseBody> fetch(RequestOptions o, Stream<List<int>>? s, Future<void>? c) async {
     if (o.path == '/articles') {
       return ResponseBody.fromString(
-        '{"code":0,"data":{"page":1,"total":2,"items":[{"id":"a1","title":"A1","summary":"","contentHtml":"","coverUrl":null,"publishedAt":"2026-06-09T00:00:00Z","category":"x","isFavorited":false},{"id":"a2","title":"A2","summary":"","contentHtml":"","coverUrl":null,"publishedAt":"2026-06-09T00:00:00Z","category":"x","isFavorited":false}]},"message":"ok"}',
+        '{"code":0,"data":{"page":1,"total":2,"articles":[{"id":1,"title":"A1","summary":"s1","content":"c1","cover_url":null,"published_at":"2026-06-09T00:00:00Z","category_name":"x","is_favorited":false},{"id":2,"title":"A2","summary":"s2","content":"c2","cover_url":null,"published_at":"2026-06-09T00:00:00Z","category_name":"x","is_favorited":false}]},"message":"ok"}',
         200,
         headers: {Headers.contentTypeHeader: ['application/json']},
       );
     }
     if (o.path.startsWith('/articles/')) {
       return ResponseBody.fromString(
-        '{"code":0,"data":{"id":"a1","title":"refreshed","summary":"","contentHtml":"","coverUrl":null,"publishedAt":"2026-06-09T00:00:00Z","category":"x","isFavorited":false},"message":"ok"}',
+        '{"code":0,"data":{"id":1,"title":"refreshed","summary":"","content":"<p>c</p>","cover_url":null,"published_at":"2026-06-09T00:00:00Z","category_name":"x","is_favorited":false},"message":"ok"}',
         200,
         headers: {Headers.contentTypeHeader: ['application/json']},
       );

@@ -1,4 +1,17 @@
+import 'dart:convert';
 import 'package:hot_ai_app/features/learning_paths/domain/path_chapter.dart';
+
+List<String> _parseStringList(dynamic value) {
+  if (value == null) return [];
+  if (value is List) return value.cast<String>();
+  if (value is String && value.isNotEmpty) {
+    try {
+      final decoded = jsonDecode(value);
+      if (decoded is List) return decoded.cast<String>();
+    } catch (_) {}
+  }
+  return [];
+}
 
 class LearningPath {
   LearningPath({
@@ -17,6 +30,7 @@ class LearningPath {
     required this.studentCount,
     required this.coverImage,
     required this.isFavorited,
+    this.progressPercent = 0,
     this.chapters = const [],
   });
 
@@ -35,9 +49,10 @@ class LearningPath {
   final int studentCount;
   final String? coverImage;
   final bool isFavorited;
+  final double progressPercent;
   final List<PathChapter> chapters;
 
-  LearningPath copyWith({bool? isFavorited, List<PathChapter>? chapters}) => LearningPath(
+  LearningPath copyWith({bool? isFavorited, double? progressPercent, List<PathChapter>? chapters}) => LearningPath(
         id: id,
         title: title,
         slug: slug,
@@ -53,6 +68,7 @@ class LearningPath {
         studentCount: studentCount,
         coverImage: coverImage,
         isFavorited: isFavorited ?? this.isFavorited,
+        progressPercent: progressPercent ?? this.progressPercent,
         chapters: chapters ?? this.chapters,
       );
 
@@ -72,6 +88,7 @@ class LearningPath {
         'student_count': studentCount,
         'cover_image': coverImage,
         'isFavorited': isFavorited,
+        'progress_percent': progressPercent,
         'chapters': chapters.map((c) => c.toJson()).toList(),
       };
 
@@ -91,14 +108,15 @@ class LearningPath {
       icon: j['icon'] as String?,
       difficulty: j['difficulty'] as String? ?? 'beginner',
       levelLabel: j['level_label'] as String? ?? '入门',
-      learningGoals: (j['learning_goals'] as List?)?.cast<String>() ?? const [],
-      targetAudience: (j['target_audience'] as List?)?.cast<String>() ?? const [],
+      learningGoals: _parseStringList(j['learning_goals']),
+      targetAudience: _parseStringList(j['target_audience']),
       estimatedDays: j['estimated_days'] as int? ?? 0,
       estimatedHours: j['estimated_hours'] as int? ?? 0,
       chapterCount: j['chapter_count'] as int? ?? chapters.length,
       studentCount: j['student_count'] as int? ?? 0,
       coverImage: j['cover_image'] as String?,
       isFavorited: j['isFavorited'] as bool? ?? false,
+      progressPercent: (j['progress_percent'] as num?)?.toDouble() ?? 0,
       chapters: chapters,
     );
   }

@@ -87,26 +87,24 @@ class _StubAdapter implements HttpClientAdapter {
   @override
   Future<ResponseBody> fetch(RequestOptions o, Stream<List<int>>? s, Future<void>? c) async {
     if (o.path == '/tools/categories') {
-      return _ok({
-        'items': [
-          {'id': 1, 'name': '代码助手', 'slug': 'code', 'icon': '💻',
-           'description': 'd', 'sort_order': 1, 'featured': true},
-          {'id': 2, 'name': '图像生成', 'slug': 'image', 'icon': '🎨',
-           'description': 'd', 'sort_order': 2, 'featured': false},
-        ],
-      });
+      return _ok([
+        {'id': 1, 'name': '代码助手', 'slug': 'code', 'icon': '💻',
+         'description': 'd', 'sort_order': 1, 'featured': true},
+        {'id': 2, 'name': '图像生成', 'slug': 'image', 'icon': '🎨',
+         'description': 'd', 'sort_order': 2, 'featured': false},
+      ]);
     }
     if (o.path == '/tools') {
       final cat = o.queryParameters['category_id'];
       final search = o.queryParameters['search'];
       if (search == 'cursor') {
-        return _ok({'page': 1, 'total': 1, 'items': [_toolJson('Cursor', 'cursor', tags: ['AI', 'IDE'])]});
+        return _ok({'page': 1, 'total': 1, 'list': [_toolJson('Cursor', 'cursor', tags: ['AI', 'IDE'])]});
       }
       if (cat == 2 || cat == '2') {
-        return _ok({'page': 1, 'total': 1, 'items': [_toolJson('Midjourney', 'mj', tags: ['AI', '图像'])]});
+        return _ok({'page': 1, 'total': 1, 'list': [_toolJson('Midjourney', 'mj', tags: ['AI', '图像'])]});
       }
       return _ok({
-        'page': 1, 'total': 25, 'items': [
+        'page': 1, 'total': 25, 'list': [
           _toolJson('Cursor', 'cursor', tags: ['AI', 'IDE']),
           _toolJson('ChatGPT', 'gpt', tags: ['AI', '对话']),
         ],

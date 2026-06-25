@@ -59,7 +59,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('软件工程师'), findsOneWidget);
     expect(find.text('技术'), findsOneWidget);
-    expect(find.textContaining('中 · 50'), findsOneWidget);
+    expect(find.text('50'), findsOneWidget);
+    expect(find.text('中等风险'), findsOneWidget);
   });
 
   testWidgets('风险等级 chip 5 个 + 全部分类', (tester) async {

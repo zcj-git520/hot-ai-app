@@ -15,10 +15,10 @@ class ToolRepositoryImpl implements ToolRepository {
   @override
   Future<List<ToolCategory>> getCategories() async {
     final resp = await dio.get('/tools/categories');
-    final data = ApiResponse.fromJson<Map<String, dynamic>>(
-      resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final cats = (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(ToolCategory.fromJson).toList();
+    final data = ApiResponse.fromJson<List<dynamic>>(
+      resp.data as Map<String, dynamic>, (j) => j as List<dynamic>).unwrap();
+    final cats = (data as List).cast<Map<String, dynamic>>()
+        .map(ToolCategory.fromJson).toList();
     await boxes.toolsCache.put('__categories__', cats.map((c) => c.toJson()).toList());
     return cats;
   }
@@ -32,8 +32,17 @@ class ToolRepositoryImpl implements ToolRepository {
     });
     final data = ApiResponse.fromJson<Map<String, dynamic>>(
       resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final items = (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(Tool.fromJson).toList();
+    // 获取分类映射用于填充categoryName
+    final categories = await getCategories();
+    final categoryMap = {for (var c in categories) c.id: c.name};
+
+    final items = (data['list'] as List).cast<Map<String, dynamic>>()
+        .map((j) {
+          final tool = Tool.fromJson(j);
+          // 填充categoryName (categoryId是int, categoryMap的key是String)
+          final catName = categoryMap[tool.categoryId.toString()];
+          return catName != null ? tool.copyWith(categoryName: catName) : tool;
+        }).toList();
     for (final t in items) {
       await boxes.toolsCache.put(t.slug, t.toJson());
     }

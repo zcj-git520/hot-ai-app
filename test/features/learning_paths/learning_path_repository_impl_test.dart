@@ -86,10 +86,10 @@ class _StubAdapter implements HttpClientAdapter {
     if (o.path == '/learning-paths') {
       final diff = o.queryParameters['difficulty'];
       if (diff == 'beginner') {
-        return _ok({'page': 1, 'total': 1, 'items': [_pathJson(2, '入门 Prompt', 'beginner', '入门')]});
+        return _ok({'page': 1, 'total': 1, 'list': [_pathJson(2, '入门 Prompt', 'beginner', '入门')]});
       }
       return _ok({
-        'page': 1, 'total': 25, 'items': [
+        'page': 1, 'total': 25, 'list': [
           _pathJson(1, 'AI 工程师', 'intermediate', '进阶'),
           _pathJson(3, 'RAG 实战', 'advanced', '高级'),
         ],
@@ -99,7 +99,7 @@ class _StubAdapter implements HttpClientAdapter {
       return _ok(_pathJsonWithChapters(1, 'AI 工程师', 'intermediate', '进阶'));
     }
     if (o.path == '/learning-paths/1/chapters') {
-      return _ok({'items': [_chapterJson(5), _chapterJson(6)]});
+      return _ok([_chapterJson(5), _chapterJson(6)]);
     }
     if (o.path == '/chapters/5') {
       return _ok(_chapterJson(5));

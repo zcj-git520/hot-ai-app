@@ -26,13 +26,22 @@ class _FakeRepo implements LearningPathRepository {
   Future<List<String>> getFavorites() async => [];
 }
 
-LearningPath _p(String id, {String title = 'p', String diff = 'beginner'}) => LearningPath(
-      id: id, title: title, slug: 's', description: 'desc',
-      icon: '🤖', difficulty: diff, levelLabel: diff == 'beginner' ? '入门' : '进阶',
-      learningGoals: const [], targetAudience: const [],
-      estimatedDays: 30, estimatedHours: 60,
-      chapterCount: 5, studentCount: 100, coverImage: null, isFavorited: false,
-    );
+LearningPath _p(String id, {String title = 'p', String diff = 'beginner'}) {
+  String label;
+  switch (diff) {
+    case 'beginner': label = '入门';
+    case 'intermediate': label = '进阶';
+    case 'advanced': label = '高级';
+    default: label = '入门';
+  }
+  return LearningPath(
+    id: id, title: title, slug: 's', description: 'desc',
+    icon: '🤖', difficulty: diff, levelLabel: label,
+    learningGoals: const [], targetAudience: const [],
+    estimatedDays: 30, estimatedHours: 60,
+    chapterCount: 5, studentCount: 100, coverImage: null, isFavorited: false,
+  );
+}
 
 void main() {
   testWidgets('空态:显示 EmptyView', (tester) async {
@@ -53,18 +62,18 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(find.text('AI 工程师之路'), findsOneWidget);
-    expect(find.text('入门 · 30 天 · 5 章'), findsOneWidget);
+    expect(find.text('30 天 · 5 章 · 100 人学习'), findsOneWidget);
   });
 
   testWidgets('难度 chip 4 个 + 全部', (tester) async {
     await tester.pumpWidget(ProviderScope(
-      overrides: [learningPathRepositoryProvider.overrideWith((ref) => _FakeRepo([_p('1')]))],
+      overrides: [learningPathRepositoryProvider.overrideWith((ref) => _FakeRepo([_p('1', diff: 'advanced')]))],
       child: const MaterialApp(home: LearningPathsListPage()),
     ));
     await tester.pumpAndSettle();
     expect(find.text('全部'), findsOneWidget);
     expect(find.text('入门'), findsOneWidget);
     expect(find.text('进阶'), findsOneWidget);
-    expect(find.text('高级'), findsOneWidget);
+    expect(find.text('高级'), findsNWidgets(2));
   });
 }

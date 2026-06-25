@@ -51,4 +51,16 @@ class Article {
         category: j['category'] as String? ?? '',
         isFavorited: j['isFavorited'] as bool? ?? false,
       );
+
+  /// 从 API 响应创建（API 使用 snake_case 字段名，id 为 int）
+  factory Article.fromApiJson(Map<String, dynamic> j) => Article(
+        id: (j['id'] as int).toString(),
+        title: j['title'] as String? ?? '',
+        summary: j['summary'] as String? ?? '',
+        contentHtml: j['content'] as String? ?? '',
+        coverUrl: j['cover_url'] as String?,
+        publishedAt: DateTime.tryParse(j['published_at'] as String? ?? '') ?? DateTime.now(),
+        category: j['category_name'] as String? ?? '',
+        isFavorited: j['is_favorited'] as bool? ?? false,
+      );
 }

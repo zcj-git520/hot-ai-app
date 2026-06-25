@@ -19,8 +19,8 @@ class ProfessionRepositoryImpl implements ProfessionRepository {
     });
     final data = ApiResponse.fromJson<Map<String, dynamic>>(
       resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final items = (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(Profession.fromJson).toList();
+    final items = (data['professions'] as List).cast<Map<String, dynamic>>()
+        .map(Profession.fromJson).toList();
     for (final p in items) {
       await boxes.professionsCache.put(p.id, p.toJson());
     }

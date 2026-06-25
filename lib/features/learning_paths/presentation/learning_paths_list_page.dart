@@ -119,17 +119,93 @@ class _PathTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: Text(p.icon ?? '📚', style: const TextStyle(fontSize: 28)),
-      title: Text(p.title),
-      subtitle: Text('${p.levelLabel} · ${p.estimatedDays} 天 · ${p.chapterCount} 章',
-          style: TextStyle(color: _color, fontSize: 12)),
-      trailing: IconButton(
-        icon: Icon(p.isFavorited ? Icons.favorite : Icons.favorite_border),
-        onPressed: () =>
-            ref.read(learningPathsControllerProvider.notifier).toggleFavorite(p.id),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      color: const Color(0xFFF1F5F9),
+      elevation: 0,
+      child: InkWell(
+        onTap: () => context.push('/learning-paths/${p.id}'),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 72,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${(p.progressPercent * 100).toInt()}%',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: _color,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _color,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        p.levelLabel,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      p.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${p.estimatedDays} 天 · ${p.chapterCount} 章 · ${p.studentCount} 人学习',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: p.progressPercent,
+                        backgroundColor: Colors.white,
+                        valueColor: AlwaysStoppedAnimation<Color>(_color),
+                        minHeight: 6,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(p.isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: p.isFavorited ? Colors.red : const Color(0xFFCBD5E1)),
+                onPressed: () =>
+                    ref.read(learningPathsControllerProvider.notifier).toggleFavorite(p.id),
+              ),
+            ],
+          ),
+        ),
       ),
-      onTap: () => context.push('/learning-paths/${p.id}'),
     );
   }
 }

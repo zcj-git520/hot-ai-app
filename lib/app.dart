@@ -9,8 +9,9 @@ class HotAiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'AI 热点追踪',
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.light,
+      theme: AppTheme.theme,
       routerConfig: buildAppRouter(),
     );
   }

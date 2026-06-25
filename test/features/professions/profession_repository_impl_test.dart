@@ -78,7 +78,7 @@ class _StubAdapter implements HttpClientAdapter {
       final riskLevel = o.queryParameters['risk_level'];
       if (riskLevel == 'high') {
         return _ok({
-          'page': 1, 'total': 1, 'items': [
+          'page': 1, 'total': 1, 'professions': [
             {'id': 3, 'name': '客服', 'slug': 'cs', 'description': 'd',
              'icon': null, 'category_id': null, 'category_name': null,
              'risk_level': 'high', 'risk_score': 80, 'automation_rate': 90},
@@ -86,7 +86,7 @@ class _StubAdapter implements HttpClientAdapter {
         });
       }
       return _ok({
-        'page': 1, 'total': 25, 'items': [
+        'page': 1, 'total': 25, 'professions': [
           {'id': 1, 'name': '软件工程师', 'slug': 'se', 'description': 'd',
            'icon': '💻', 'category_id': 1, 'category_name': '技术',
            'risk_level': 'medium', 'risk_score': 55, 'automation_rate': 60},

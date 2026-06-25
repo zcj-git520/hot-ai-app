@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hot_ai_app/core/theme/app_theme.dart';
 import 'package:hot_ai_app/features/professions/domain/profession.dart';
 import 'package:hot_ai_app/features/professions/presentation/professions_controller.dart';
 import 'package:hot_ai_app/shared/widgets/empty_view.dart';
@@ -125,41 +126,107 @@ class _ProfessionTile extends ConsumerWidget {
 
   String get _riskLabel {
     switch (p.riskLevel) {
-      case 'extreme': return '极高';
-      case 'high': return '高';
-      case 'low': return '低';
-      default: return '中';
+      case 'extreme': return '极高风险';
+      case 'high': return '高风险';
+      case 'low': return '低风险';
+      default: return '中等风险';
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: Text(p.icon ?? '💼', style: const TextStyle(fontSize: 28)),
-      title: Text(p.name),
-      subtitle: Row(
-        children: [
-          if (p.categoryName != null) ...[
-            Text(p.categoryName!, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(width: 8),
-          ],
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: _riskColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text('$_riskLabel · ${p.riskScore}',
-                style: TextStyle(color: _riskColor, fontSize: 12)),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      color: const Color(0xFFF1F5F9),
+      elevation: 0,
+      child: InkWell(
+        onTap: () => context.push('/professions/${p.id}'),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // 大数字风险指数
+              Container(
+                width: 72,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _riskColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${p.riskScore}',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: _riskColor,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _riskColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _riskLabel,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              // 内容
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      p.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (p.categoryName != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        p.categoryName!,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                    if (p.description != null && p.description!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        p.description!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: const Color(0xFF64748B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(p.isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: p.isFavorited ? Colors.red : const Color(0xFFCBD5E1)),
+                onPressed: () =>
+                    ref.read(professionsControllerProvider.notifier).toggleFavorite(p.id),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-      trailing: IconButton(
-        icon: Icon(p.isFavorited ? Icons.favorite : Icons.favorite_border),
-        onPressed: () =>
-            ref.read(professionsControllerProvider.notifier).toggleFavorite(p.id),
-      ),
-      onTap: () => context.push('/professions/${p.id}'),
     );
   }
 }

@@ -19,7 +19,8 @@ class ApiResponse<T> {
   final T? data;
 
   T unwrap() {
-    if (code != 0) {
+    // 后端返回 code: 200 或 code: 0 都表示成功
+    if (code != 0 && code != 200) {
       throw AppException(code: code, message: message);
     }
     if (data == null) {

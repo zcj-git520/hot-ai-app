@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Tool {
   Tool({
     required this.id,
@@ -10,6 +12,7 @@ class Tool {
     required this.pricing,
     required this.pricingDescription,
     required this.categoryId,
+    this.categoryName,
     required this.difficulty,
     required this.rating,
     required this.reviewCount,
@@ -31,6 +34,7 @@ class Tool {
   final String pricing;
   final String pricingDescription;
   final int categoryId;
+  final String? categoryName;
   final String difficulty;
   final double rating;
   final int reviewCount;
@@ -41,11 +45,12 @@ class Tool {
   final bool isOnline;
   final bool isFavorited;
 
-  Tool copyWith({bool? isFavorited}) => Tool(
+  Tool copyWith({bool? isFavorited, String? categoryName}) => Tool(
         id: id, name: name, slug: slug, icon: icon, description: description,
         officialUrl: officialUrl, documentationUrl: documentationUrl,
         pricing: pricing, pricingDescription: pricingDescription,
-        categoryId: categoryId, difficulty: difficulty,
+        categoryId: categoryId, categoryName: categoryName ?? this.categoryName,
+        difficulty: difficulty,
         rating: rating, reviewCount: reviewCount, viewCount: viewCount,
         popularity: popularity, tags: tags, featured: featured,
         isOnline: isOnline, isFavorited: isFavorited ?? this.isFavorited,
@@ -62,6 +67,7 @@ class Tool {
         'pricing': pricing,
         'pricing_description': pricingDescription,
         'category_id': categoryId,
+        'category_name': categoryName,
         'difficulty': difficulty,
         'rating': rating,
         'review_count': reviewCount,
@@ -72,6 +78,18 @@ class Tool {
         'is_online': isOnline,
         'isFavorited': isFavorited,
       };
+
+  static List<String> _parseTags(dynamic value) {
+    if (value == null) return [];
+    if (value is List) return value.map((e) => e.toString()).toList();
+    if (value is String && value.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(value);
+        if (decoded is List) return decoded.map((e) => e.toString()).toList();
+      } catch (_) {}
+    }
+    return [];
+  }
 
   factory Tool.fromJson(Map<String, dynamic> j) => Tool(
         id: j['id'].toString(),
@@ -84,12 +102,13 @@ class Tool {
         pricing: j['pricing'] as String? ?? 'free',
         pricingDescription: j['pricing_description'] as String? ?? '',
         categoryId: j['category_id'] as int? ?? 0,
+        categoryName: j['category_name'] as String?,
         difficulty: j['difficulty'] as String? ?? 'beginner',
         rating: (j['rating'] as num?)?.toDouble() ?? 0.0,
         reviewCount: j['review_count'] as int? ?? 0,
         viewCount: j['view_count'] as int? ?? 0,
         popularity: j['popularity'] as int? ?? 0,
-        tags: (j['tags'] as List?)?.cast<String>() ?? const [],
+        tags: _parseTags(j['tags']),
         featured: j['featured'] as bool? ?? false,
         isOnline: j['is_online'] as bool? ?? true,
         isFavorited: j['isFavorited'] as bool? ?? false,

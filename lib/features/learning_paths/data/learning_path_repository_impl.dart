@@ -20,8 +20,8 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
     });
     final data = ApiResponse.fromJson<Map<String, dynamic>>(
       resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final items = (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(LearningPath.fromJson).toList();
+    final items = (data['list'] as List).cast<Map<String, dynamic>>()
+        .map(LearningPath.fromJson).toList();
     for (final p in items) {
       await boxes.learningPathsCache.put(p.id, p.toJson());
     }
@@ -52,10 +52,10 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
   @override
   Future<List<PathChapter>> getChapters(String pathId) async {
     final resp = await dio.get('/learning-paths/$pathId/chapters');
-    final data = ApiResponse.fromJson<Map<String, dynamic>>(
-      resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    return (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(PathChapter.fromJson).toList();
+    final data = ApiResponse.fromJson<List<dynamic>>(
+      resp.data as Map<String, dynamic>, (j) => j as List<dynamic>).unwrap();
+    return (data as List).cast<Map<String, dynamic>>()
+        .map(PathChapter.fromJson).toList();
   }
 
   @override

@@ -7,7 +7,8 @@ class ErrorInterceptor extends Interceptor {
     final data = response.data;
     if (data is Map && data['code'] is int) {
       final code = data['code'] as int;
-      if (code != 0) {
+      // 后端返回 code: 200 或 code: 0 都表示成功
+      if (code != 0 && code != 200) {
         return handler.reject(DioException(
           requestOptions: response.requestOptions,
           response: response,

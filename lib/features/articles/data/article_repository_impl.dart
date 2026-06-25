@@ -18,8 +18,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
     });
     final data = ApiResponse.fromJson<Map<String, dynamic>>(
       resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final items = (data['items'] as List).cast<Map<String, dynamic>>()
-      .map(Article.fromJson).toList();
+    final items = (data['articles'] as List).cast<Map<String, dynamic>>()
+        .map((j) => Article.fromApiJson(j)).toList();
     for (final a in items) {
       await boxes.articlesMeta.put(a.id, a.toJson());
     }
@@ -45,7 +45,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     final resp = await dio.get('/articles/$id');
     final data = ApiResponse.fromJson<Map<String, dynamic>>(
       resp.data as Map<String, dynamic>, (j) => j as Map<String, dynamic>).unwrap();
-    final article = Article.fromJson(data);
+    final article = Article.fromApiJson(data);
     await boxes.articleDetails.put(id, article.toJson());
     return article;
   }
